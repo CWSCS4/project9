@@ -1,0 +1,23 @@
+class Main{
+  function void main() {
+	  var SMgame game;
+	  var Array masterMap;
+	  var int current;
+	  var int gameTicks;
+	  let masterMap = Array.new(50);
+	  let current = 0;
+	  let gameTicks = 0;
+	  let game = SMgame.new();
+	  while (current < 51){
+		  let current = current + 1;
+		  do game.tick();
+		  if(((gameTicks/40)*40)=gameTicks){
+			do game.spawn(masterMap[current]);
+			let current = current + 1;
+		  }
+		  let gameTicks = gameTicks + 1;
+	}
+
+	return;
+  }
+}

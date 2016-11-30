@@ -1,34 +1,39 @@
 class BlockHead{
     field Block first;
     constructor BlockHead new(int xIn, int yIn, Block nextIn) {
-        Block temp;
-        let temp = Block.new(xIn,yIn,Block nextIn);
-        first = temp;
+        var Block temp;
+        let temp = Block.new(xIn,yIn,nextIn);
+        let first = temp;
         return this;
     }
 
     method void add(int xIn, int yIn, Block nextIn){
         var Block temp;
-        let temp = Block.new(xIn, yIn, nextIn)
+        let temp = Block.new(Math.multiply(xIn,64), yIn, nextIn);
         do first.addFromHead(temp);
+        return;
     }
 
     method void pop(){
       var Block temp;
       let temp = first;
       let first = first.getNext();
-      do temp.dispose()
+      //do temp.dispose();
+      return;
     }
 
     method void moveDown(){
-        do first.decrementFromHead();
+        do first.incrementFromHead();
+        return;
     }
 
     method void check(){
         var int toDestroy;
-        let toDestroy = first.destroyCheck();
-        if (~(toDestroy=0)){
+        let toDestroy = first.toDestroy();
+        if (toDestroy=1){
+        	do toDestroy.erase();
             do pop();
         }
+        return;
     }
 }

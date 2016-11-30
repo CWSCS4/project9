@@ -16,40 +16,58 @@ class Block{
   }
 
   method void addHelper(Block nextIn){
-      next=nextIn;
+      let next=nextIn;
+      return;
   }
 
   method void addFromHead(Block nextIn) {
       var Block current;
       let current = this;
       while (~(current.getNext()=null)){
-          current = current.getNext();
+          let current = current.getNext();
       }
-      current.addHelper(nextIn);
+      do current.addHelper(nextIn);
+      return;
   }
 
-  method void decrementY(){
-      let y = y-1
+  method void incrementY(){
+      let y = y+1;
+      return;
   }
 
-  method void decrementFromHead(Block nextIn) {
+  method void incrementFromHead() {
       var Block current;
       let current = this;
       while (~(current.getNext()=null)){
-          do current.decrementY();
-          let current = current.getNext();
+      	do current.erase();
+        do current.incrementY();
+        do current.draw();
+        let current = current.getNext();
       }
+      return;
+  }
+
+  method int toDestroy(){
+  	var int key;
+  	if (y>192){
+  		let key = Keyboard.keyPressed()-5;
+
+  		if (key=x){
+  			return 1;
+  		}
+  	}
+  	return 0;
   }
 
   method void draw() {
       do Screen.setColor(true);
-      do Screen.drawRectangle(x, y, x + 10, y + 10);
+      do Screen.drawRectangle(x, y, x + 64, y + 32);
       return;
   }
 
   method void erase() {
       do Screen.setColor(false);
-      do Screen.drawRectangle(x, y, x + 10, y + 10);
+      do Screen.drawRectangle(x, y, x + 64, y + 32);
       return;
   }
 }
