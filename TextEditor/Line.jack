@@ -1,0 +1,38 @@
+class Line {
+	field int indent;
+	field GrowableArray text;
+
+	constructor Line new() {
+		let indent = 0;
+		let text = GrowableArray.new(10);
+		return this;
+	}
+
+	method void tab() {
+		let indent = indent + 1;
+		return;
+	}
+	method void untab() {
+		let indent = indent - 1;
+		return;
+	}
+	method void print() {
+		var int i;
+		var int textLength;
+
+		let i = 0;
+		while (i < indent) {
+			do Output.printChar(32);
+			do Output.printChar(32);
+			let i = i + 1;
+		}
+		let textLength = text.getLength();
+		let i = 0;
+		while (i < textLength) {
+			do Output.printChar(text.get(i));
+			let i = i + 1;
+		}
+		do Output.println();
+		return;
+	}
+}

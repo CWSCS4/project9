@@ -1,0 +1,4 @@
+class File {
+	field GrowableArray lines;
+	field int lineNumber, columnNumber;
+}

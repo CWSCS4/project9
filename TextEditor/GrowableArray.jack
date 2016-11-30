@@ -1,0 +1,67 @@
+class GrowableArray {
+	field int size;
+	field int allocatedSize;
+	field Array array;
+
+	constructor GrowableArray new(int initialSize) {
+		if (initialSize < 1) { let initialSize = 1; }
+		let size = 0;
+		let allocatedSize = initialSize;
+		let array = Array.new(initialSize);
+		return this;
+	}
+
+	method void addAt(Array o, int index) {
+		var Array targetArray;
+		var int copyIndex;
+
+		if (size = allocatedSize) {
+			let allocatedSize = allocatedSize + allocatedSize;
+			let targetArray = Array.new(allocatedSize);
+			let copyIndex = 0;
+			while (copyIndex < index) {
+				let targetArray[copyIndex] = array[copyIndex];
+				let copyIndex = copyIndex + 1;
+			}
+		}
+		else { let targetArray = array; }
+		let copyIndex = index;
+		while (copyIndex < size) {
+			let targetArray[copyIndex + 1] = array[copyIndex];
+			let copyIndex = copyIndex + 1;
+		}
+		let targetArray[index] = o;
+		let size = size + 1;
+		if (~(targetArray = array)) {
+			do array.dispose();
+			let array = targetArray;
+		}
+		return;
+	}
+	method void removeAt(int index) {
+		var int copyIndex;
+
+		let copyIndex = index + 1;
+		while (copyIndex < size) {
+			let array[copyIndex - 1] = array[copyIndex];
+			let copyIndex = copyIndex + 1;
+		}
+		let size = size - 1;
+		return;
+	}
+	method Array get(int index) {
+		return array[index];
+	}
+	method void set(Array o, int index) {
+		let array[index] = o;
+		return;
+	}
+	method int getLength() {
+		return size;
+	}
+	method void dispose() {
+		do array.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+}
