@@ -1,0 +1,17 @@
+class SMgame{
+  field BlockHead blockList;
+
+  constructor SquareGame new() {
+      let blockList = BlockHead.new(10, 10, null);
+
+      return this;
+  }
+
+  method void addNext(int xIn, int yIn){
+      do blockList.add(xIn, yIn, null)
+  }
+
+  method void tick(){
+      do blockList.moveDown();
+  }
+}

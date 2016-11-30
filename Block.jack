@@ -1,0 +1,55 @@
+class Block{
+  field int x;
+  field int y;
+  field Block next;
+
+  constructor Block new(int xIn, int yIn, Block nextIn) {
+      let x = xIn;
+      let y = yIn;
+      let next = nextIn;
+
+      return this;
+  }
+
+  method Block getNext(){
+      return next;
+  }
+
+  method void addHelper(Block nextIn){
+      next=nextIn;
+  }
+
+  method void addFromHead(Block nextIn) {
+      var Block current;
+      let current = this;
+      while (~(current.getNext()=null)){
+          current = current.getNext();
+      }
+      current.addHelper(nextIn);
+  }
+
+  method void decrementY(){
+      let y = y-1
+  }
+
+  method void decrementFromHead(Block nextIn) {
+      var Block current;
+      let current = this;
+      while (~(current.getNext()=null)){
+          do current.decrementY();
+          let current = current.getNext();
+      }
+  }
+
+  method void draw() {
+      do Screen.setColor(true);
+      do Screen.drawRectangle(x, y, x + 10, y + 10);
+      return;
+  }
+
+  method void erase() {
+      do Screen.setColor(false);
+      do Screen.drawRectangle(x, y, x + 10, y + 10);
+      return;
+  }
+}
