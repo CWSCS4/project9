@@ -1,12 +1,14 @@
 class Block{
   field int x;
   field int y;
+  field int yOffset;
   field Block next;
 
   constructor Block new(int xIn, int yIn, Block nextIn) {
       let x = xIn;
       let y = yIn;
       let next = nextIn;
+      let yOffset = 32;
 
       return this;
   }
@@ -31,7 +33,10 @@ class Block{
   }
 
   method void incrementY(){
-      let y = y+1;
+    let y = y+1;
+      if(y>222){
+        let yOffset = yOffset-1;
+      }
       return;
   }
 
@@ -58,21 +63,26 @@ class Block{
   			return 1;
   		}
   	}
-    if (y>222){
+    if (y>253){
         return 1;
     }
   	return 0;
   }
 
+  method void dispose(){
+    do Memory.deAlloc(this);
+    return;
+  }
+
   method void draw() {
       do Screen.setColor(true);
-      do Screen.drawRectangle(x, y, x + 128, y + 32);
+      do Screen.drawRectangle(x, y, x + 128, y + yOffset);
       return;
   }
 
   method void erase() {
       do Screen.setColor(false);
-      do Screen.drawRectangle(x, y, x + 128, y + 32);
+      do Screen.drawRectangle(x, y, x + 128, y + yOffset);
       return;
   }
 }
