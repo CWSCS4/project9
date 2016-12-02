@@ -9,7 +9,7 @@ class BlockHead{
 
     method void add(int xIn, int yIn, Block nextIn){
         var Block temp;
-        let temp = Block.new(Math.multiply(xIn,64), yIn, nextIn);
+        let temp = Block.new(xIn, yIn, nextIn);
         do first.addFromHead(temp);
         return;
     }
@@ -31,7 +31,7 @@ class BlockHead{
         var int toDestroy;
         let toDestroy = first.toDestroy();
         if (toDestroy=1){
-        	do toDestroy.erase();
+        	do first.erase();
             do pop();
         }
         return;

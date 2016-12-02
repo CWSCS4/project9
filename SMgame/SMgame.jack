@@ -17,4 +17,9 @@ class SMgame{
       do blockList.check();
       return;
   }
+
+  method void spawn(int Xval){
+      do addNext(Math.multiply(Xval,128),10);
+      return;
+  }
 }

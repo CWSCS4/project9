@@ -8,14 +8,18 @@ class Main{
 	  let current = 0;
 	  let gameTicks = 0;
 	  let game = SMgame.new();
-	  while (current < 51){
+	  while (true){
+      do Output.moveCursor(0,0);
+      do Output.printString("Score: ");
+      do Output.printInt(current);
 		  let current = current + 1;
 		  do game.tick();
-		  if(((gameTicks/40)*40)=gameTicks){
-			do game.spawn(masterMap[current]);
-			let current = current + 1;
+		  if(((gameTicks/100)*100)=gameTicks){
+			  do game.spawn(0);
+			  let current = current + 1;
 		  }
 		  let gameTicks = gameTicks + 1;
+      do Sys.wait(8);
 	}
 
 	return;

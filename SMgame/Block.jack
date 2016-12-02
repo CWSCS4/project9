@@ -39,8 +39,10 @@ class Block{
       var Block current;
       let current = this;
       while (~(current.getNext()=null)){
+
       	do current.erase();
         do current.incrementY();
+
         do current.draw();
         let current = current.getNext();
       }
@@ -56,18 +58,21 @@ class Block{
   			return 1;
   		}
   	}
+    if (y>222){
+        return 1;
+    }
   	return 0;
   }
 
   method void draw() {
       do Screen.setColor(true);
-      do Screen.drawRectangle(x, y, x + 64, y + 32);
+      do Screen.drawRectangle(x, y, x + 128, y + 32);
       return;
   }
 
   method void erase() {
       do Screen.setColor(false);
-      do Screen.drawRectangle(x, y, x + 64, y + 32);
+      do Screen.drawRectangle(x, y, x + 128, y + 32);
       return;
   }
 }
