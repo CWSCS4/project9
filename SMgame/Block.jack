@@ -13,16 +13,16 @@ class Block{
       return this;
   }
 
-  method Block getNext(){
+  method Block getNext(){ //returns next node.
       return next;
   }
 
-  method void addHelper(Block nextIn){
+  method void addHelper(Block nextIn){ //helper function for addFromHead().
       let next=nextIn;
       return;
   }
 
-  method void addFromHead(Block nextIn) {
+  method void addFromHead(Block nextIn) { //Loops through every node until the last one is reached, then adds nextIn to its next field.
       var Block current;
       let current = this;
       while (~(current.getNext()=null)){
@@ -32,15 +32,15 @@ class Block{
       return;
   }
 
-  method void incrementY(){
-    let y = y+1;
-      if(y>222){
-        let yOffset = yOffset-1;
+  method void incrementY(){ //Increments Y coordinate by 2.
+    let y = y+2;
+      if(y>222){ //Checks whether the bottom of the rectangle is leaving the screen or not. If so, the same value added to y is subtracted from yOffset.
+        let yOffset = yOffset-2;
       }
       return;
   }
 
-  method void incrementFromHead() {
+  method void incrementFromHead() { //Works just like addFromHead(), but adds to Y instead.
       var Block current;
       let current = this;
       while (~(current.getNext()=null)){
@@ -54,35 +54,35 @@ class Block{
       return;
   }
 
-  method int toDestroy(){
+  method int toDestroy(){ //Checks whether the block is in a destroyable scenario or not.
   	var int key;
-  	if (y>192){
-  		let key = Keyboard.keyPressed()-5;
-
-  		if (key=x){
-  			return 1;
+    var int temp;
+  	if (y>191){ //Case 1: right key is being pressed and in scorable range
+  		let key = Keyboard.keyPressed()-130;
+  		if ((key*128)=x){
+        return 32-Math.abs(224-y); //Calculates a score based upon how close the block was to the line when key was pressed.
   		}
   	}
-    if (y>253){
-        return 1;
+    if (y>253){ //Case 2: leaves the screen and returns a score of 0
+        return 0;
     }
-  	return 0;
+  	return -1; //Case 3: neither, so nothing is done
   }
 
-  method void dispose(){
+  method void dispose(){ //Dispose function
     do Memory.deAlloc(this);
     return;
   }
 
-  method void draw() {
+  method void draw() { //Draw rectangle using x and y coordinates and the y offset.
       do Screen.setColor(true);
-      do Screen.drawRectangle(x, y, x + 128, y + yOffset);
+      do Screen.drawRectangle(x, y, x + 127, y + yOffset);
       return;
   }
 
-  method void erase() {
+  method void erase() { //draw(), but with color white.
       do Screen.setColor(false);
-      do Screen.drawRectangle(x, y, x + 128, y + yOffset);
+      do Screen.drawRectangle(x, y, x + 127, y + yOffset);
       return;
   }
 }

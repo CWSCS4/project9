@@ -1,27 +1,60 @@
 class Main{
   function void main() {
-	  var SMgame game;
-	  var Array masterMap;
+	  var SMgame game; //variable set up.
+	  var String masterMap;
 	  var int current;
 	  var int gameTicks;
-	  let masterMap = Array.new(50);
+    var String score;
+    var String outOf;
+
+    let masterMap = "a";
 	  let current = 0;
 	  let gameTicks = 0;
 	  let game = SMgame.new();
-	  while (true){
-      do Output.moveCursor(0,0);
-      do Output.printString("Score: ");
-      do Output.printInt(current);
-		  do game.tick();
-		  if(gameTicks=100){
-			  do game.spawn(0);
+    let score = "Score: ";
+    let outOf = " out of ";
+    do Output.printString("Leftmost=left arrow      | center left=up arrow");
+    do Output.println();
+    do Output.printString("center right=right arrow | rightmost=down arrow");
+    do Output.println();
+    while(masterMap.length() < 8){
+      let masterMap = Keyboard.readLine("Enter string [>8chars]: "); //map input. Chars from the inputted string are converted to ints and then modulo'd by 4 to get the next column to spawn a block in.
+    }
+
+    do Screen.clearScreen();
+
+	  while ((masterMap.length()-current) > 0){  //main loop
+      do Output.moveCursor(0,0); //print score data
+      do Output.printString(score);
+      do Output.printInt(game.getScore());
+      do Output.printString(outOf);
+      do Output.printInt((masterMap.length()-3)*32);
+		  do game.tick(); //calls game's tick() method, which handles program logic
+      do Main.renderLine();
+
+		  if(gameTicks=40){ //every 40 ticks, a new block is spawned using Euclid's algorithm
+			  do game.spawn(masterMap.charAt(current) - (4 * (masterMap.charAt(current) / 4)));
 			  let current = current + 1;
 			  let gameTicks = 0;
 		  }
 		  let gameTicks = gameTicks + 1;
-      do Sys.wait(8);
+      do Sys.wait(12);
 	}
 
 	return;
+  }
+
+  function void renderLine(){ //renders guide line
+    var int loopC;
+    let loopC=0;
+    while(loopC < 512){
+      do Screen.setColor(false);
+      do Screen.drawPixel(loopC, 224);
+      let loopC = loopC+6;
+      do Screen.setColor(true);
+      do Screen.drawPixel(loopC, 224);
+      let loopC = loopC+6;
+    }
+    return;
   }
 }
