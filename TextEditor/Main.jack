@@ -1,5 +1,193 @@
 class Main {
+	static String UNTITLED;
+	static String FILE_SEPARATOR;
+	static String DASH_LINE;
+	static String COMMAND;
+	static String NEW;
+	static String RENAME;
+	static String NEW_NAME;
+	static String CLOSE;
+	static String SELECT;
+	static String UNKNOWN_COMMAND;
+	static String SELECT_PROMPT;
+
+	static GrowableArray files;
+	static int currentFileIndex;
+	static int newFileNumber;
+
 	function void main() {
+		var int i;
+		var char c;
+
+		let UNTITLED = "Untitled ";
+		let FILE_SEPARATOR = " | ";
+		let DASH_LINE = String.new(64); //'-'.repeat(64) to fill a line
+		while (i < 64) {
+			do DASH_LINE.appendChar(45);
+			let i = i + 1;
+		}
+		let COMMAND = "Command: ";
+		let NEW = "N";
+		let RENAME = "R";
+		let NEW_NAME = "New filename: ";
+		let CLOSE = "W";
+		let SELECT = "S";
+		let UNKNOWN_COMMAND = "Unknown command";
+		let SELECT_PROMPT = "Use arrow keys to select file; then hit ENTER";
+
+		let files = GrowableArray.new(5);
+		let newFileNumber = 0;
+		do Main.addFile();
+		do Main.printFilenames();
+
+		while (true) {
+			let c = 0;
+			while (c = 0) { let c = Keyboard.keyPressed(); }
+			do Main.onKey(c);
+		}
+		return; //unreachable
+	}
+
+	function void addFile() {
+		var String fileNumberString;
+
+		let currentFileIndex = files.getLength();
+		let fileNumberString = String.new(3);
+		let newFileNumber = newFileNumber + 1;
+		do fileNumberString.setInt(newFileNumber);
+		do files.addAt(File.new(Util.append(UNTITLED, fileNumberString)), currentFileIndex);
+		do fileNumberString.dispose();
+		return;
+	}
+	function void printFilenames() {
+		var int filesLength;
+		var int i;
+		var File file;
+		var boolean currentFile;
+
+		do Output.moveCursor(0, 0);
+		let filesLength = files.getLength();
+		while (i < filesLength) {
+			let file = files.get(i);
+			let currentFile = i = currentFileIndex;
+			if (currentFile) { do Output.printChar(42); } //add asterisks around name of current file
+			do Output.printString(file.getName());
+			if (currentFile) { do Output.printChar(42); }
+			let i = i + 1;
+			if (i < filesLength) { do Output.printString(FILE_SEPARATOR); }
+		}
+		do Output.println();
+		do Output.printString(DASH_LINE);
+		return;
+	}
+	function void onKey(char key) {
+		if (key = 64) { //@ - command key
+			do Main.waitUntilUnpressed();
+			do Main.runCommand();
+			return;
+		}
+		do Output.printInt(key);
+		do Output.println();
+		return;
+	}
+	function void waitUntilUnpressed() {
+		var char c;
+		let c = 1;
+		while (c > 0) { let c = Keyboard.keyPressed(); }
+		return;
+	}
+	function void runCommand() {
+		var String command;
+
+		do Screen.clearScreen();
+		do Main.printFilenames();
+		let command = Keyboard.readLine(COMMAND);
+		if (Util.equals(command, NEW)) {
+			do Main.addFile();
+			do Screen.clearScreen();
+			do Main.printFilenames();
+			return;
+		}
+		if (Util.equals(command, RENAME)) {
+			do Main.renameFile();
+			do Screen.clearScreen();
+			do Main.printFilenames();
+			do Main.printFile();
+			return;
+		}
+		if (Util.equals(command, CLOSE)) {
+			do Main.closeFile();
+			do Screen.clearScreen();
+			do Main.printFilenames();
+			do Main.printFile();
+			return;
+		}
+		if (Util.equals(command, SELECT)) {
+			do Main.selectFile();
+			return;
+		}
+		do Output.printString(UNKNOWN_COMMAND);
+		do Sys.wait(1000);
+		do Screen.clearScreen();
+		do Main.printFilenames();
+		return;
+	}
+	function void renameFile() {
+		var File file;
+		if (files.getLength() = 0) { return; }
+		let file = files.get(currentFileIndex);
+		do file.setName(Keyboard.readLine(NEW_NAME));
+		return;
+	}
+	function void closeFile() {
+		var File file;
+		if (files.getLength() = 0) { return; }
+		let file = files.get(currentFileIndex);
+		do file.dispose();
+		do files.removeAt(currentFileIndex);
+		let currentFileIndex = files.getLength() - 1;
+		return;
+	}
+	function void selectFile() {
+		var int maxFileIndex;
+		var boolean selecting;
+		var char c;
+		if (files.getLength() = 0) { return; }
+		let maxFileIndex = files.getLength() - 1;
+		let selecting = true;
+		do Output.printString(SELECT_PROMPT);
+		while (selecting) { //go until enter is pressed
+			let c = Keyboard.keyPressed();
+			if (c = 130) { //left key
+				if (currentFileIndex > 0) {
+					let currentFileIndex = currentFileIndex - 1;
+					do Screen.clearScreen();
+					do Main.printFilenames();
+					do Main.printFile();
+				}
+			}
+			else {
+				if (c = 132) { //right key
+					if (currentFileIndex < maxFileIndex) {
+						let currentFileIndex = currentFileIndex + 1;
+						do Screen.clearScreen();
+						do Main.printFilenames();
+						do Main.printFile();
+					}
+				}
+				else {
+					if (c = 128) { let selecting = false; }
+				}
+			}
+			while (c > 0) { let c = Keyboard.keyPressed(); }
+		}
+		return;
+	}
+	function void printFile() {
+		var File file;
+		if (files.getLength() = 0) { return; }
+		let file = files.get(currentFileIndex);
+		do file.print();
 		return;
 	}
 }

@@ -1,4 +1,33 @@
 class File {
+	field String name;
 	field GrowableArray lines;
 	field int lineNumber, columnNumber;
+
+	constructor File new(String inName) {
+		let name = inName;
+		let lines = GrowableArray.new(10);
+		do lines.addAt(0, Line.new());
+		let lineNumber = 0;
+		let columnNumber = 0;
+		return this;
+	}
+
+	method String getName() {
+		return name;
+	}
+	method void setName(String newName) {
+		let name = newName;
+		return;
+	}
+	method void print() {
+		do Output.printString(name);
+		do Output.println();
+		return;
+	}
+	method void dispose() {
+		do name.dispose();
+		do lines.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
 }

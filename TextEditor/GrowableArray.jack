@@ -18,7 +18,6 @@ class GrowableArray {
 		if (size = allocatedSize) {
 			let allocatedSize = allocatedSize + allocatedSize;
 			let targetArray = Array.new(allocatedSize);
-			let copyIndex = 0;
 			while (copyIndex < index) {
 				let targetArray[copyIndex] = array[copyIndex];
 				let copyIndex = copyIndex + 1;
