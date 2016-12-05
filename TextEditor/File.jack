@@ -6,7 +6,7 @@ class File {
 	constructor File new(String inName) {
 		let name = inName;
 		let lines = GrowableArray.new(10);
-		do lines.addAt(0, Line.new());
+		do lines.addAt(Line.new(), 0);
 		let lineNumber = 0;
 		let columnNumber = 0;
 		return this;
@@ -19,9 +19,29 @@ class File {
 		let name = newName;
 		return;
 	}
+	method void onKey(char c) {
+		do insertCharacter(c);
+		return;
+	}
+	method void insertCharacter(char c) {
+		var Line line;
+		let line = lines.get(lineNumber);
+		do line.addCharAt(c, columnNumber);
+		let columnNumber = columnNumber + 1;
+		return;
+	}
 	method void print() {
-		do Output.printString(name);
-		do Output.println();
+		var int lineCount;
+		var int printLineNumber;
+		var Line line;
+
+		let lineCount = lines.getLength();
+		let printLineNumber = Math.max(0, lineCount - 10);
+		while ((printLineNumber < lineCount) & ((printLineNumber - lineNumber) < 10)) {
+			let line = lines.get(printLineNumber);
+			do line.print();
+			let printLineNumber = printLineNumber + 1;
+		}
 		return;
 	}
 	method void dispose() {

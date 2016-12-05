@@ -16,11 +16,17 @@ class Line {
 		let indent = indent - 1;
 		return;
 	}
+	method int getLength() {
+		return text.getLength();
+	}
+	method void addCharAt(char c, int index) {
+		do text.addAt(c, index);
+		return;
+	}
 	method void print() {
 		var int i;
 		var int textLength;
 
-		let i = 0;
 		while (i < indent) {
 			do Output.printChar(32);
 			do Output.printChar(32);

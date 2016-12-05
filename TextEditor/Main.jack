@@ -10,6 +10,13 @@ class Main {
 	static String SELECT;
 	static String UNKNOWN_COMMAND;
 	static String SELECT_PROMPT;
+	static String HELP;
+	static String HELP_LINE_1,
+		HELP_LINE_2,
+		HELP_LINE_3,
+		HELP_LINE_4,
+		HELP_LINE_5;
+	static String ESCAPE_PROMPT;
 
 	static GrowableArray files;
 	static int currentFileIndex;
@@ -34,6 +41,13 @@ class Main {
 		let SELECT = "S";
 		let UNKNOWN_COMMAND = "Unknown command";
 		let SELECT_PROMPT = "Use arrow keys to select file; then hit ENTER";
+		let HELP = "H";
+		let HELP_LINE_1 = "N for new file";
+		let HELP_LINE_2 = "R to rename file";
+		let HELP_LINE_3 = "W to close file";
+		let HELP_LINE_4 = "S to select file";
+		let HELP_LINE_5 = "H to show this screen";
+		let ESCAPE_PROMPT = "Enter character to escape: ";
 
 		let files = GrowableArray.new(5);
 		let newFileNumber = 0;
@@ -86,6 +100,11 @@ class Main {
 			do Main.runCommand();
 			return;
 		}
+		if (key = 92) { //\ - escape key
+			do Main.waitUntilUnpressed();
+			do Main.readEscape();
+			return;
+		}
 		do Output.printInt(key);
 		do Output.println();
 		return;
@@ -124,6 +143,13 @@ class Main {
 		}
 		if (Util.equals(command, SELECT)) {
 			do Main.selectFile();
+			return;
+		}
+		if (Util.equals(command, HELP)) {
+			do Main.printHelp();
+			do Screen.clearScreen();
+			do Main.printFilenames();
+			do Main.printFile();
 			return;
 		}
 		do Output.printString(UNKNOWN_COMMAND);
@@ -188,6 +214,41 @@ class Main {
 		if (files.getLength() = 0) { return; }
 		let file = files.get(currentFileIndex);
 		do file.print();
+		return;
+	}
+	function void printHelp() {
+		var char c;
+
+		let c = 1;
+		while (c > 0) { let c = Keyboard.keyPressed(); }
+
+		do Output.printString(HELP_LINE_1);
+		do Output.println();
+		do Output.printString(HELP_LINE_2);
+		do Output.println();
+		do Output.printString(HELP_LINE_3);
+		do Output.println();
+		do Output.printString(HELP_LINE_4);
+		do Output.println();
+		do Output.printString(HELP_LINE_5);
+		do Output.println();
+
+		while (c = 0) { let c = Keyboard.keyPressed(); }
+		while (c > 0) { let c = Keyboard.keyPressed(); }
+		return;
+	}
+	function void readEscape() {
+		var File file;
+		if (files.getLength() = 0) { return; }
+		let file = files.get(currentFileIndex);
+
+		do Screen.clearScreen();
+		do Main.printFilenames();
+		do Output.printString(ESCAPE_PROMPT);
+		do file.insertCharacter(Keyboard.readChar());
+		do Screen.clearScreen();
+		do Main.printFilenames();
+		do Main.printFile();
 		return;
 	}
 }
