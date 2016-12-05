@@ -1,0 +1,31 @@
+class SMgame{
+  field BlockHead blockList; //Headed linked list.
+  field int score;
+
+  constructor SMgame new() {
+      let score = 0;
+      let blockList = BlockHead.new(0, 0, null);
+
+      return this;
+  }
+
+  method int getScore(){ //Returns score
+    return score;
+  }
+
+  method void addNext(int xIn, int yIn){ //Calls blocklist.add()
+      do blockList.add(xIn, yIn, null);
+      return;
+  }
+
+  method void tick(){ //General tick function, moves blocks down and updates score.
+      do blockList.moveDown();
+      let score = score + blockList.check();
+      return;
+  }
+
+  method void spawn(int Xval){ //Spawns a new block using supplied Xval.
+      do addNext((Math.multiply(Xval,128)),24);
+      return;
+  }
+}

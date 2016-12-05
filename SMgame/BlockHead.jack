@@ -1,0 +1,76 @@
+class BlockHead{ //BlockHead is the head of the linked list used in SMgame
+    field Block first;
+    field string miss;
+    field string bad;
+    field string good;
+    field string great;
+    field string best;
+    field string clear;
+    constructor BlockHead new(int xIn, int yIn, Block nextIn) {
+        var Block temp; //Set up
+        let temp = Block.new(xIn,yIn,nextIn);
+        let first = temp;
+
+        let miss =  "Inhumanly bad!                          ";
+        let bad =   "That might be a C after a Letarte scale!";
+        let good =  "It could be worse!                      ";
+        let great = "Not bad!                                ";
+        let best =  "BEST!                                   ";
+
+        return this;
+    }
+
+    method void add(int xIn, int yIn, Block nextIn){ //Calls Block.new() to create a new block and first.addFromHead() to add it to the linked list.
+        var Block temp;
+        let temp = Block.new(xIn, yIn, nextIn);
+        do first.addFromHead(temp);
+        return;
+    }
+
+    method void pop(){ //Destroys the first block in the linked list.
+      var Block temp;
+      let temp = first;
+      let first = first.getNext();
+      do temp.dispose();
+      return;
+    }
+
+    method void moveDown(){ //Moves blocks down.
+        do first.incrementFromHead();
+        return;
+    }
+
+    method string decode(int input){ //Returns appropiate stirng based on score.
+        if (input = 0){
+            return miss;
+        }
+        if (input < 8){
+            return bad;
+        }
+        if (input < 16){
+            return good;
+        }
+        if (input < 24){
+            return great;
+        }
+        return best;
+    }
+
+    method int check(){ //Checks first block to see if it should be destroyed or not. Uses value from first.toDestroy() to determine it and the corresponding score/text.
+        var int toDestroy;
+        let toDestroy = first.toDestroy();
+        if (toDestroy=-1){
+          return 0;
+        }
+        do Output.println();
+        do Output.printString(decode(toDestroy));
+        if (toDestroy=0){
+        	do first.erase();
+            do pop();
+            return 0;
+        }
+        do first.erase();
+        do pop();
+        return toDestroy;
+    }
+}
