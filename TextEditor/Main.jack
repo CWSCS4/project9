@@ -25,6 +25,7 @@ class Main {
 	function void main() {
 		var int i;
 		var char c;
+		var int loopCount;
 
 		let UNTITLED = "Untitled ";
 		let FILE_SEPARATOR = " | ";
@@ -56,8 +57,21 @@ class Main {
 
 		while (true) {
 			let c = 0;
-			while (c = 0) { let c = Keyboard.keyPressed(); }
+			while (c = 0) {
+				if (loopCount = 0) {
+					do Main.printFile(true);
+				}
+				if (loopCount = 50) {
+					do Main.printFile(false);
+				}
+				let c = Keyboard.keyPressed();
+				let loopCount = loopCount + 1;
+				if (loopCount > 100) {
+					let loopCount = 0;
+				}
+			}
 			do Main.onKey(c);
+			do Sys.wait(200);
 		}
 		return; //unreachable
 	}
@@ -95,6 +109,8 @@ class Main {
 		return;
 	}
 	function void onKey(char key) {
+		var File file;
+
 		if (key = 64) { //@ - command key
 			do Main.waitUntilUnpressed();
 			do Main.runCommand();
@@ -105,8 +121,12 @@ class Main {
 			do Main.readEscape();
 			return;
 		}
-		do Output.printInt(key);
+		/*do Output.printInt(key);
 		do Output.println();
+		return;*/
+		if (files.getLength() = 0) { return; }
+		let file = files.get(currentFileIndex);
+		do file.onKey(key);
 		return;
 	}
 	function void waitUntilUnpressed() {
@@ -131,14 +151,14 @@ class Main {
 			do Main.renameFile();
 			do Screen.clearScreen();
 			do Main.printFilenames();
-			do Main.printFile();
+			do Main.printFile(true);
 			return;
 		}
 		if (Util.equals(command, CLOSE)) {
 			do Main.closeFile();
 			do Screen.clearScreen();
 			do Main.printFilenames();
-			do Main.printFile();
+			do Main.printFile(true);
 			return;
 		}
 		if (Util.equals(command, SELECT)) {
@@ -149,7 +169,7 @@ class Main {
 			do Main.printHelp();
 			do Screen.clearScreen();
 			do Main.printFilenames();
-			do Main.printFile();
+			do Main.printFile(true);
 			return;
 		}
 		do Output.printString(UNKNOWN_COMMAND);
@@ -178,7 +198,13 @@ class Main {
 		var int maxFileIndex;
 		var boolean selecting;
 		var char c;
-		if (files.getLength() = 0) { return; }
+
+		if (files.getLength() < 2) { //cannot select between 0 or 1 files
+			do Screen.clearScreen();
+			do Main.printFilenames();
+			do Main.printFile(true);
+			return;
+		}
 		let maxFileIndex = files.getLength() - 1;
 		let selecting = true;
 		do Output.printString(SELECT_PROMPT);
@@ -189,7 +215,7 @@ class Main {
 					let currentFileIndex = currentFileIndex - 1;
 					do Screen.clearScreen();
 					do Main.printFilenames();
-					do Main.printFile();
+					do Main.printFile(true);
 				}
 			}
 			else {
@@ -198,22 +224,22 @@ class Main {
 						let currentFileIndex = currentFileIndex + 1;
 						do Screen.clearScreen();
 						do Main.printFilenames();
-						do Main.printFile();
+						do Main.printFile(true);
 					}
 				}
 				else {
-					if (c = 128) { let selecting = false; }
+					if (c = 128) { let selecting = false; } //enter key
 				}
 			}
 			while (c > 0) { let c = Keyboard.keyPressed(); }
 		}
 		return;
 	}
-	function void printFile() {
+	function void printFile(boolean showCursor) {
 		var File file;
 		if (files.getLength() = 0) { return; }
 		let file = files.get(currentFileIndex);
-		do file.print();
+		do file.print(showCursor);
 		return;
 	}
 	function void printHelp() {
@@ -248,7 +274,7 @@ class Main {
 		do file.insertCharacter(Keyboard.readChar());
 		do Screen.clearScreen();
 		do Main.printFilenames();
-		do Main.printFile();
+		do Main.printFile(true);
 		return;
 	}
 }

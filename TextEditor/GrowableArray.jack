@@ -37,16 +37,18 @@ class GrowableArray {
 		}
 		return;
 	}
-	method void removeAt(int index) {
+	method Array removeAt(int index) {
+		var Array result;
 		var int copyIndex;
 
+		let result = array[index];
 		let copyIndex = index + 1;
 		while (copyIndex < size) {
 			let array[copyIndex - 1] = array[copyIndex];
 			let copyIndex = copyIndex + 1;
 		}
 		let size = size - 1;
-		return;
+		return result;
 	}
 	method Array get(int index) {
 		return array[index];

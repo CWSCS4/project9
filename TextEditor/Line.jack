@@ -8,6 +8,13 @@ class Line {
 		return this;
 	}
 
+	method int getIndent() {
+		return indent;
+	}
+	method void setIndent(int newIndent) {
+		let indent = newIndent;
+		return;
+	}
 	method void tab() {
 		let indent = indent + 1;
 		return;
@@ -23,7 +30,10 @@ class Line {
 		do text.addAt(c, index);
 		return;
 	}
-	method void print() {
+	method char removeCharAt(int index) {
+		return text.removeAt(index);
+	}
+	method void print(int cursorLocation, char cursorChar) {
 		var int i;
 		var int textLength;
 
@@ -35,10 +45,21 @@ class Line {
 		let textLength = text.getLength();
 		let i = 0;
 		while (i < textLength) {
+			if (i = cursorLocation) {
+				do Output.printChar(cursorChar);
+			}
 			do Output.printChar(text.get(i));
 			let i = i + 1;
 		}
+		if (i = cursorLocation) {
+			do Output.printChar(cursorChar);
+		}
 		do Output.println();
+		return;
+	}
+	method void dispose() {
+		do text.dispose();
+		do Memory.deAlloc(this);
 		return;
 	}
 }
