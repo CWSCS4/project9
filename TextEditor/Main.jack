@@ -17,6 +17,7 @@ class Main {
 		HELP_LINE_4,
 		HELP_LINE_5;
 	static String ESCAPE_PROMPT;
+	static String DELETE_NOT_SUPPORTED;
 
 	static GrowableArray files;
 	static int currentFileIndex;
@@ -49,6 +50,7 @@ class Main {
 		let HELP_LINE_4 = "S to select file";
 		let HELP_LINE_5 = "H to show this screen";
 		let ESCAPE_PROMPT = "Enter character to escape: ";
+		let DELETE_NOT_SUPPORTED = "Delete not supported. Use backspace instead.";
 
 		let files = GrowableArray.new(5);
 		let newFileNumber = 0;
@@ -121,9 +123,15 @@ class Main {
 			do Main.readEscape();
 			return;
 		}
-		/*do Output.printInt(key);
-		do Output.println();
-		return;*/
+		if (key = 139) { //delete
+			do Output.moveCursor(2, 0);
+			do Output.printString(DELETE_NOT_SUPPORTED);
+			do Sys.wait(1000);
+			do Screen.clearScreen();
+			do Main.printFilenames();
+			do Main.printFile();
+			return;
+		}
 		if (files.getLength() = 0) { return; }
 		let file = files.get(currentFileIndex);
 		do file.onKey(key);

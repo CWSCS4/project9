@@ -25,25 +25,44 @@ class File {
 		return;
 	}
 	method void onKey(char c) {
-		var Line line, previousLine;
+		var Line line, previousLine, nextLine;
 		var int lineLength;
-		var int copyIndex;
+		var int copyFromIndex, copyToIndex;
 
+		if (c = 96) { //'`' - indent because tab is not a thing
+			let line = lines.get(lineNumber);
+			do line.tab();
+			return;
+		}
+		if (c = 126) { //'~' - unindent because tab is not a thing
+			let line = lines.get(lineNumber);
+			do line.untab();
+			return;
+		}
 		if (c = 129) { //backspace
 			if (columnNumber = 0) { //deleting the newline character
 				if (lineNumber > 0) { //can't do anything on the first line
 					let line = lines.get(lineNumber);
+					let lineLength = line.getLength();
 					let previousLine = lines.get(lineNumber - 1);
-					let copyIndex = previousLine.getLength();
-					while (line.getLength() > 0) {
-						do previousLine.addCharAt(line.removeCharAt(0), copyIndex);
-						let copyIndex = copyIndex + 1;
+					let copyFromIndex = 0;
+					let copyToIndex = previousLine.getLength();
+					let columnNumber = copyToIndex;
+					while (copyFromIndex < lineLength) {
+						do previousLine.addCharAt(line.getCharAt(copyFromIndex), copyToIndex);
+						let copyFromIndex = copyFromIndex + 1;
+						let copyToIndex = copyToIndex + 1;
 					}
 					do line.dispose();
 					do lines.removeAt(lineNumber);
 					let lineNumber = lineNumber - 1;
 					do scrollIntoView();
 				}
+			}
+			else { //just deleting a character in the line
+				let line = lines.get(lineNumber);
+				do line.removeCharAt(columnNumber - 1);
+				let columnNumber = columnNumber - 1;
 			}
 			return;
 		}
@@ -59,6 +78,49 @@ class File {
 			else { //just going to previous character on line
 				let columnNumber = columnNumber - 1;
 			}
+			return;
+		}
+		if (c = 131) { //up arrow
+			if (lineNumber > 0) {
+				let line = lines.get(lineNumber);
+				let lineNumber = lineNumber - 1;
+				do scrollIntoView();
+				let previousLine = lines.get(lineNumber);
+				let columnNumber = previousLine.getIndexForColumn(line.getColumnForIndex(columnNumber));
+			}
+			return;
+		}
+		if (c = 132) { //right arrow
+			let line = lines.get(lineNumber);
+			if (columnNumber = line.getLength()) { //going to start of next line
+				if (lineNumber < (lines.getLength() - 1)) { //can't do anything on the last line
+					let lineNumber = lineNumber + 1;
+					do scrollIntoView();
+					let columnNumber = 0;
+				}
+			}
+			else { //just going to next character on line
+				let columnNumber = columnNumber + 1;
+			}
+			return;
+		}
+		if (c = 133) { //down arrow
+			if (lineNumber < (lines.getLength() - 1)) { //can't do anything on the last line
+				let line = lines.get(lineNumber);
+				let lineNumber = lineNumber + 1;
+				do scrollIntoView();
+				let nextLine = lines.get(lineNumber);
+				let columnNumber = nextLine.getIndexForColumn(line.getColumnForIndex(columnNumber));
+			}
+			return;
+		}
+		if (c = 134) { //home
+			let columnNumber = 0;
+			return;
+		}
+		if (c = 135) { //end
+			let line = lines.get(lineNumber);
+			let columnNumber = line.getLength();
 			return;
 		}
 		do insertCharacter(c); //if not a special character, just delete it
@@ -101,7 +163,7 @@ class File {
 		do Output.moveCursor(2, 0);
 		let lineCount = lines.getLength();
 		let printLineNumber = firstPrintLine;
-		while ((printLineNumber < lineCount) & ((printLineNumber - lineNumber) < LINES_TO_DISPLAY)) {
+		while ((printLineNumber < lineCount) & (printLineNumber < (firstPrintLine + LINES_TO_DISPLAY))) {
 			let line = lines.get(printLineNumber);
 			if (printLineNumber = lineNumber) {
 				let cursorLocation = columnNumber;
@@ -126,7 +188,10 @@ class File {
 		return;
 	}
 	method void updateCursorChar(boolean showCursor) {
-		do Output.moveCursor(2 + (lineNumber - firstPrintLine), columnNumber);
+		var Line line;
+
+		let line = lines.get(lineNumber);
+		do Output.moveCursor(2 + (lineNumber - firstPrintLine), line.getColumnForIndex(columnNumber));
 		do Output.printChar(File.getCursorChar(showCursor));
 		return;
 	}

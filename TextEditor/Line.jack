@@ -20,6 +20,7 @@ class Line {
 		return;
 	}
 	method void untab() {
+		if (indent = 0) { return; }
 		let indent = indent - 1;
 		return;
 	}
@@ -33,7 +34,10 @@ class Line {
 	method char removeCharAt(int index) {
 		return text.removeAt(index);
 	}
-	method void print(int cursorLocation, char cursorChar) {
+	method char getCharAt(int index) {
+		return text.get(index);
+	}
+	method void print(int cursorIndex, char cursorChar) {
 		var int i;
 		var int textLength;
 
@@ -45,17 +49,29 @@ class Line {
 		let textLength = text.getLength();
 		let i = 0;
 		while (i < textLength) {
-			if (i = cursorLocation) {
+			if (i = cursorIndex) {
 				do Output.printChar(cursorChar);
 			}
 			do Output.printChar(text.get(i));
 			let i = i + 1;
 		}
-		if (i = cursorLocation) {
+		if (i = cursorIndex) {
 			do Output.printChar(cursorChar);
 		}
 		do Output.println();
 		return;
+	}
+	method int getColumnForIndex(int index) {
+		return (2 * indent) + index;
+	}
+	method int getIndexForColumn(int column) {
+		var int index;
+		var int textLength;
+		let index = column - (2 * indent);
+		if (index < 0) { return 0; }
+		let textLength = text.getLength();
+		if (index > textLength) { return textLength; }
+		return index;
 	}
 	method void dispose() {
 		do text.dispose();
