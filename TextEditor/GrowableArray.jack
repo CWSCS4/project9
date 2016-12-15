@@ -24,10 +24,10 @@ class GrowableArray {
 			}
 		}
 		else { let targetArray = array; }
-		let copyIndex = index;
-		while (copyIndex < size) {
-			let targetArray[copyIndex + 1] = array[copyIndex];
-			let copyIndex = copyIndex + 1;
+		let copyIndex = size;
+		while (copyIndex > index) {
+			let targetArray[copyIndex] = array[copyIndex - 1];
+			let copyIndex = copyIndex - 1;
 		}
 		let targetArray[index] = o;
 		let size = size + 1;
