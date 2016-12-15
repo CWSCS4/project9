@@ -1,0 +1,222 @@
+class File {
+	static int LINES_TO_DISPLAY;
+
+	field String name;
+	field GrowableArray lines;
+	field int lineNumber, columnNumber;
+	field int firstPrintLine;
+
+	constructor File new(String inName) {
+		let LINES_TO_DISPLAY = 21; //ensure it has always been initialized, although it's static
+		let name = inName;
+		let lines = GrowableArray.new(10);
+		do lines.addAt(Line.new(), 0);
+		let lineNumber = 0;
+		let columnNumber = 0;
+		let firstPrintLine = 0;
+		return this;
+	}
+
+	method String getName() {
+		return name;
+	}
+	method void setName(String newName) {
+		let name = newName;
+		return;
+	}
+	method void onKey(char c) {
+		var Line line, previousLine, nextLine;
+		var int lineLength;
+		var int copyFromIndex, copyToIndex;
+
+		if (c = 96) { //'`' - indent because tab is not a thing
+			let line = lines.get(lineNumber);
+			do line.tab();
+			return;
+		}
+		if (c = 126) { //'~' - unindent because tab is not a thing
+			let line = lines.get(lineNumber);
+			do line.untab();
+			return;
+		}
+		if (c = 129) { //backspace
+			if (columnNumber = 0) { //deleting the newline character
+				if (lineNumber > 0) { //can't do anything on the first line
+					let line = lines.get(lineNumber);
+					let lineLength = line.getLength();
+					let previousLine = lines.get(lineNumber - 1);
+					let copyFromIndex = 0;
+					let copyToIndex = previousLine.getLength();
+					let columnNumber = copyToIndex;
+					while (copyFromIndex < lineLength) {
+						do previousLine.addCharAt(line.getCharAt(copyFromIndex), copyToIndex);
+						let copyFromIndex = copyFromIndex + 1;
+						let copyToIndex = copyToIndex + 1;
+					}
+					do line.dispose();
+					do lines.removeAt(lineNumber);
+					let lineNumber = lineNumber - 1;
+					do scrollIntoView();
+				}
+			}
+			else { //just deleting a character in the line
+				let line = lines.get(lineNumber);
+				do line.removeCharAt(columnNumber - 1);
+				let columnNumber = columnNumber - 1;
+			}
+			return;
+		}
+		if (c = 130) { //left arrow
+			if (columnNumber = 0) { //going to end of previous line
+				if (lineNumber > 0) { //can't do anything on the first line
+					let lineNumber = lineNumber - 1;
+					do scrollIntoView();
+					let previousLine = lines.get(lineNumber);
+					let columnNumber = previousLine.getLength();
+				}
+			}
+			else { //just going to previous character on line
+				let columnNumber = columnNumber - 1;
+			}
+			return;
+		}
+		if (c = 131) { //up arrow
+			if (lineNumber > 0) {
+				let line = lines.get(lineNumber);
+				let lineNumber = lineNumber - 1;
+				do scrollIntoView();
+				let previousLine = lines.get(lineNumber);
+				let columnNumber = previousLine.getIndexForColumn(line.getColumnForIndex(columnNumber));
+			}
+			return;
+		}
+		if (c = 132) { //right arrow
+			let line = lines.get(lineNumber);
+			if (columnNumber = line.getLength()) { //going to start of next line
+				if (lineNumber < (lines.getLength() - 1)) { //can't do anything on the last line
+					let lineNumber = lineNumber + 1;
+					do scrollIntoView();
+					let columnNumber = 0;
+				}
+			}
+			else { //just going to next character on line
+				let columnNumber = columnNumber + 1;
+			}
+			return;
+		}
+		if (c = 133) { //down arrow
+			if (lineNumber < (lines.getLength() - 1)) { //can't do anything on the last line
+				let line = lines.get(lineNumber);
+				let lineNumber = lineNumber + 1;
+				do scrollIntoView();
+				let nextLine = lines.get(lineNumber);
+				let columnNumber = nextLine.getIndexForColumn(line.getColumnForIndex(columnNumber));
+			}
+			return;
+		}
+		if (c = 134) { //home
+			let columnNumber = 0;
+			return;
+		}
+		if (c = 135) { //end
+			let line = lines.get(lineNumber);
+			let columnNumber = line.getLength();
+			return;
+		}
+		do insertCharacter(c); //if not a special character, just delete it
+		return;
+	}
+	method void insertCharacter(char c) {
+		var Line line, newLine;
+		var int copyIndex;
+
+		let line = lines.get(lineNumber);
+		if (c = 128) { //enter
+			let newLine = Line.new();
+			do newLine.setIndent(line.getIndent());
+			while (line.getLength() > columnNumber) {
+				do newLine.addCharAt(line.removeCharAt(columnNumber), copyIndex);
+				let copyIndex = copyIndex + 1;
+			}
+			let lineNumber = lineNumber + 1;
+			do lines.addAt(newLine, lineNumber);
+			let columnNumber = 0;
+			do scrollIntoView();
+		}
+		else { //generic character
+			do line.addCharAt(c, columnNumber);
+			let columnNumber = columnNumber + 1;
+		}
+		return;
+	}
+	method void print() {
+		var int lineCount;
+		var int printLineNumber;
+		var Line line;
+		var int cursorLocation;
+
+		//Clear out entire text area
+		do Screen.setColor(false);
+		do Screen.drawRectangle(0, 18, 511, 255);
+		do Screen.setColor(true);
+		//Print all lines on screen
+		do Output.moveCursor(2, 0);
+		let lineCount = lines.getLength();
+		let printLineNumber = firstPrintLine;
+		while ((printLineNumber < lineCount) & (printLineNumber < (firstPrintLine + LINES_TO_DISPLAY))) {
+			let line = lines.get(printLineNumber);
+			if (printLineNumber = lineNumber) {
+				let cursorLocation = columnNumber;
+			}
+			else {
+				let cursorLocation = -1;
+			}
+			do line.print(cursorLocation, File.getCursorChar(false));
+			let printLineNumber = printLineNumber + 1;
+		}
+		return;
+	}
+	method void scrollIntoView() {
+		if (lineNumber < firstPrintLine) {
+			let firstPrintLine = lineNumber;
+		}
+		else {
+			if (lineNumber > (firstPrintLine + LINES_TO_DISPLAY - 1)) {
+				let firstPrintLine = lineNumber - LINES_TO_DISPLAY + 1;
+			}
+		}
+		return;
+	}
+	method void updateCursorChar(boolean showCursor) {
+		var Line line;
+
+		let line = lines.get(lineNumber);
+		do Output.moveCursor(2 + (lineNumber - firstPrintLine), line.getColumnForIndex(columnNumber));
+		do Output.printChar(File.getCursorChar(showCursor));
+		return;
+	}
+	function char getCursorChar(boolean showCursor) {
+		if (showCursor) {
+			return 95; //'_'
+		}
+		else {
+			return 32; //' '
+		}
+	}
+	method void dispose() {
+		var int lineCount;
+		var int lineIndex;
+		var Line line;
+
+		let lineCount = lines.getLength();
+		while (lineIndex < lineCount) {
+			let line = lines.get(lineIndex);
+			do line.dispose();
+			let lineIndex = lineIndex + 1;
+		}
+		do name.dispose();
+		do lines.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+}

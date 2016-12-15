@@ -1,0 +1,32 @@
+class Util {
+	function String append(String string1, String string2) {
+		var String result;
+		var int length1, length2;
+		var int i;
+
+		let length1 = string1.length();
+		let length2 = string2.length();
+		let result = String.new(length1 + length2);
+		while (i < length1) {
+			do result.appendChar(string1.charAt(i));
+			let i = i + 1;
+		}
+		let i = 0;
+		while (i < length2) {
+			do result.appendChar(string2.charAt(i));
+			let i = i + 1;
+		}
+		return result;
+	}
+	function boolean equals(String string1, String string2) {
+		var int length;
+		var int i;
+		let length = string1.length();
+		if (~(length = string2.length())) { return false; }
+		while (i < length) {
+			if (~(string1.charAt(i) = string2.charAt(i))) { return false; }
+			let i = i + 1;
+		}
+		return true;
+	}
+}
