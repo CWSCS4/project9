@@ -59,10 +59,10 @@ class Main {
 			let c = 0;
 			while (c = 0) {
 				if (loopCount = 0) {
-					do Main.printFile(true);
+					do Main.updateCursor(true);
 				}
 				if (loopCount = 50) {
-					do Main.printFile(false);
+					do Main.updateCursor(false);
 				}
 				let c = Keyboard.keyPressed();
 				let loopCount = loopCount + 1;
@@ -127,6 +127,7 @@ class Main {
 		if (files.getLength() = 0) { return; }
 		let file = files.get(currentFileIndex);
 		do file.onKey(key);
+		do Main.printFile();
 		return;
 	}
 	function void waitUntilUnpressed() {
@@ -151,14 +152,14 @@ class Main {
 			do Main.renameFile();
 			do Screen.clearScreen();
 			do Main.printFilenames();
-			do Main.printFile(true);
+			do Main.printFile();
 			return;
 		}
 		if (Util.equals(command, CLOSE)) {
 			do Main.closeFile();
 			do Screen.clearScreen();
 			do Main.printFilenames();
-			do Main.printFile(true);
+			do Main.printFile();
 			return;
 		}
 		if (Util.equals(command, SELECT)) {
@@ -169,7 +170,7 @@ class Main {
 			do Main.printHelp();
 			do Screen.clearScreen();
 			do Main.printFilenames();
-			do Main.printFile(true);
+			do Main.printFile();
 			return;
 		}
 		do Output.printString(UNKNOWN_COMMAND);
@@ -202,7 +203,7 @@ class Main {
 		if (files.getLength() < 2) { //cannot select between 0 or 1 files
 			do Screen.clearScreen();
 			do Main.printFilenames();
-			do Main.printFile(true);
+			do Main.printFile();
 			return;
 		}
 		let maxFileIndex = files.getLength() - 1;
@@ -215,7 +216,7 @@ class Main {
 					let currentFileIndex = currentFileIndex - 1;
 					do Screen.clearScreen();
 					do Main.printFilenames();
-					do Main.printFile(true);
+					do Main.printFile();
 				}
 			}
 			else {
@@ -224,7 +225,7 @@ class Main {
 						let currentFileIndex = currentFileIndex + 1;
 						do Screen.clearScreen();
 						do Main.printFilenames();
-						do Main.printFile(true);
+						do Main.printFile();
 					}
 				}
 				else {
@@ -235,11 +236,18 @@ class Main {
 		}
 		return;
 	}
-	function void printFile(boolean showCursor) {
+	function void printFile() {
 		var File file;
 		if (files.getLength() = 0) { return; }
 		let file = files.get(currentFileIndex);
-		do file.print(showCursor);
+		do file.print();
+		return;
+	}
+	function void updateCursor(boolean showCursor) {
+		var File file;
+		if (files.getLength() = 0) { return; }
+		let file = files.get(currentFileIndex);
+		do file.updateCursorChar(showCursor);
 		return;
 	}
 	function void printHelp() {
@@ -274,7 +282,7 @@ class Main {
 		do file.insertCharacter(Keyboard.readChar());
 		do Screen.clearScreen();
 		do Main.printFilenames();
-		do Main.printFile(true);
+		do Main.printFile();
 		return;
 	}
 }

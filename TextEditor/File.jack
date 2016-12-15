@@ -87,12 +87,11 @@ class File {
 		}
 		return;
 	}
-	method void print(boolean showCursor) {
+	method void print() {
 		var int lineCount;
 		var int printLineNumber;
 		var Line line;
 		var int cursorLocation;
-		var char cursorChar;
 
 		//Clear out entire text area
 		do Screen.setColor(false);
@@ -106,17 +105,11 @@ class File {
 			let line = lines.get(printLineNumber);
 			if (printLineNumber = lineNumber) {
 				let cursorLocation = columnNumber;
-				if (showCursor) {
-					let cursorChar = 95; //'_'
-				}
-				else {
-					let cursorChar = 32; //' '
-				}
 			}
 			else {
 				let cursorLocation = -1;
 			}
-			do line.print(cursorLocation, cursorChar);
+			do line.print(cursorLocation, File.getCursorChar(false));
 			let printLineNumber = printLineNumber + 1;
 		}
 		return;
@@ -131,6 +124,19 @@ class File {
 			}
 		}
 		return;
+	}
+	method void updateCursorChar(boolean showCursor) {
+		do Output.moveCursor(2 + (lineNumber - firstPrintLine), columnNumber);
+		do Output.printChar(File.getCursorChar(showCursor));
+		return;
+	}
+	function char getCursorChar(boolean showCursor) {
+		if (showCursor) {
+			return 95; //'_'
+		}
+		else {
+			return 32; //' '
+		}
 	}
 	method void dispose() {
 		var int lineCount;
